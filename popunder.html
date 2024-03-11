@@ -1,0 +1,717 @@
+	<script>
+	////////////////////////////////////////////////////////////////////////////////
+	// script popunder                                                            //
+	// "frequency" untuk mengatur berapa lama waktu menunggu popunder berikutnya  //
+	// "limit" untuk mengatur berapa banyak popunder                              //
+	// "delay" mengatur berapa lama setelah popunder pertama                      //
+	// site twitter.com bisa diganti dengan iklan kita                            //
+	// taruh diatas </body>                                                       //
+	// Powered by : Faizu                                                         //
+	////////////////////////////////////////////////////////////////////////////////
+	
+				!(function (e) {
+    !(function (e) {
+        var t, n, r;
+        (Element.prototype.matches = Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector),
+            (Element.prototype.closest =
+                Element.prototype.closest ||
+                function (e) {
+                    let t = this;
+                    do {
+                        if (t.matches(e)) return t;
+                        t = t.parentElement || t.parentNode;
+                    } while (null !== t && 1 === t.nodeType);
+                    return null;
+                }),
+            (Element.prototype.remove =
+                Element.prototype.remove ||
+                function () {
+                    this.parentNode && this.parentNode.removeChild(this);
+                });
+        const o = e.setTimeout,
+            i = e.setInterval,
+            a = e.clearTimeout,
+            l = e.clearInterval,
+            c = e.localStorage,
+            s = e.sessionStorage,
+            u = e.document,
+            p = e.location;
+        let d = u.addEventListener,
+            f = u.removeEventListener;
+        if (!("" + u.addEventListener).includes("[native code]")) {
+            const e = u.createElement("iframe");
+            (e.style.cssText = "position: absolute; width: 1px; height: 1px; opacity: 0; top: -1px left: -1px; pointer-events: none; z-index: -1;"),
+                u.body ? u.body.appendChild(e) : u.documentElement.appendChild(e),
+                (d = ((null === (t = e.contentWindow) || void 0 === t ? void 0 : t.addEventListener) || u.addEventListener).bind(u)),
+                (f = ((null === (n = e.contentWindow) || void 0 === n ? void 0 : n.removeEventListener) || u.removeEventListener).bind(u)),
+                e.remove();
+        }
+        let h = e.Date;
+        if (!("" + h).includes("[native code]")) {
+            const e = u.createElement("iframe");
+            (e.style.cssText = "position: absolute; width: 1px; height: 1px; opacity: 0; top: -1px left: -1px; pointer-events: none; z-index: -1;"),
+                u.body ? u.body.appendChild(e) : u.documentElement.appendChild(e),
+                (h = (null === (r = e.contentWindow) || void 0 === r ? void 0 : r.Date) || h),
+                e.remove();
+        }
+        let m = p.href.trim();
+        try {
+            m = e.top.location.href.trim();
+        } catch (e) {}
+        let g = u.referrer.trim();
+        try {
+            g = e.top.document.referrer.trim();
+        } catch (e) {}
+        p.ancestorOrigins && 0 != p.ancestorOrigins.length && ((g = ""), (m = p.ancestorOrigins[p.ancestorOrigins.length - 1]));
+        const v = { http: !0, https: !0, www: !0, and: !0, the: !0 };
+        let y = !1;
+        const b = JSON.parse(
+                '{"url":"https://twitter.com/","showTrkURL":"https://twitter.com/","type":"popup","bindTo":"","ignoreTo":"","coverTo":"","width":"","height":"","top":"","left":"","openTargetBlank":true,"deviceType":"desktop","osName":"windows","browserName":"chrome","browserVersion":"121","initDelay":0,"delay":1,"limitKey":"clk$pop@limit","frequency":300,"limit":2,"limitPerPage":0,"limitPerSession":0,"skipClicks":0}'
+            );
+		let w = b.limitKey,
+			E = w + "_l",
+			_ = w + "_pp",
+			x = w + "_pp_lp",
+			S = w + "_s",
+			k = b.sl || 0,
+			I = b.sf || 0,
+			T = "c" + Math.random().toFixed(20).substring(2, 10) + Math.random().toFixed(20).substring(2, 10),
+			C = (b.coverTo.length ? b.coverTo + "," : "") + "iframe,object,." + T,
+			N = "clk$pop@cover",
+			O = e !== e.top;
+		w = "clk$pop@limit" + window.location.pathname.replace(/\//g, '_');
+        let P = !1;
+        const L = (function () {
+            if (void 0 !== e["clk$prp@kws"]) return e["clk$prp@kws"];
+            if (-1 !== p.pathname.indexOf("/search")) return [];
+            const t = u.querySelector("head > title");
+            if (!t) return [];
+            const n = u.createElement("textarea");
+            n.innerHTML = t.innerHTML;
+            const r = {},
+                o = n.value
+                    .toLocaleLowerCase()
+                    .replace(p.host, " ")
+                    .split("")
+                    .map((e) => {
+                        const t = e.charCodeAt(0);
+                        return t <= 47 || (t >= 58 && t <= 96) || t >= 123 ? " " : e;
+                    })
+                    .join("")
+                    .split(" ")
+                    .filter((e) => {
+                        if (e.length > 32 || e.length < 3 || v[e]) return !1;
+                        if (r[e]) return !1;
+                        r[e] = !0;
+                        let t = !1;
+                        const n = {};
+                        return (
+                            e.split("").forEach((e) => {
+                                const r = e.charCodeAt(0);
+                                (n[r] = !0), r >= 48 && r <= 57 && (t = !0);
+                            }),
+                            !t && Object.keys(n).length > 1
+                        );
+                    });
+            return (e["clk$prp@kws"] = o), o;
+        })();
+        let A = b.width || screen.width / 1.5,
+            W = b.height || screen.height / 1.5,
+            M = b.top || (screen.height - W) / 2,
+            R = b.left || (screen.width - A) / 2,
+            D = "desktop" === b.deviceType,
+            j = !1,
+            U = !0,
+            H = !O,
+            J = "mousedown";
+        if (("desktop" !== b.deviceType || ("firefox" !== b.browserName && "msie" !== b.browserName) || (J = "click"), "desktop" === b.deviceType))
+            switch (b.browserName) {
+                case "firefox":
+                case "safari":
+                    j = !0;
+                    break;
+                case "msie":
+                    Number(b.browserVersion) >= 11 && (j = !0);
+            }
+        !(function (t) {
+            if (void 0 !== e["clk$prp@abl"]) return (y = e["clk$prp@abl"]), void t();
+            const n = u.createElement("div");
+            (n.id = "AdImage"),
+                (n.className = "blockAds bodyAd boxAds fixedAds"),
+                (n.style.cssText = "position: absolute; width: 1px; height: 1px; opacity: 0; top: -1px left: -1px; pointer-events: none;"),
+                u.body ? u.body.appendChild(n) : u.documentElement.appendChild(n),
+                o(() => {
+                    (y = 0 === n.offsetWidth), (e["clk$prp@abl"] = y), n.parentElement && n.parentElement.removeChild(n), t();
+                }, 25);
+        })(() => {
+            y && ((D = !1), (j = !1), (U = !1));
+        }),
+            (function (e) {
+                let t = !1,
+                    n = o(function () {
+                        t || ((t = !0), e(!1));
+                    }, 2e3);
+                const r = new Image();
+                r.addEventListener("error", function () {
+                    a(n), t || ((t = !0), e(!1));
+                }),
+                    r.addEventListener("load", function () {
+                        a(n), t || ((t = !0), e(!0));
+                    }),
+                    (r.src = "https://www.facebook.com/login.php?next=https://www.facebook.com/favicon.ico");
+            })((e) => {
+                P = e;
+            });
+        var $ = "";
+        !(function () {
+            var t = u.createElement("iframe");
+            (t.style.cssText = "position: absolute; width: 1px; height: 1px; opacity: 0; top: -1px left: -1px; pointer-events: none;"), u.body ? u.body.appendChild(t) : u.documentElement.appendChild(t);
+            var n,
+                r,
+                o,
+                i,
+                a,
+                l =
+                    ((n = 2654435761),
+                    (r = 2246822519),
+                    (o = 3266489917),
+                    (i = 668265263),
+                    (a = 374761393),
+                    e.Uint8Array
+                        ? function (e, t) {
+                              void 0 === t && (t = 0),
+                                  (e =
+                                      "string" == typeof e
+                                          ? (function (e) {
+                                                for (var t = [], n = 0, r = e.length; n < r; ++n) {
+                                                    var o = e.charCodeAt(n);
+                                                    if (o < 128) t.push(o);
+                                                    else if (o < 2048) t.push(192 | (o >> 6), 128 | (63 & o));
+                                                    else if (o < 55296 || o >= 57344) t.push(224 | (o >> 12), 128 | ((o >> 6) & 63), 128 | (63 & o));
+                                                    else {
+                                                        var i = 65536 + (((1023 & o) << 10) | (1023 & e.charCodeAt(++n)));
+                                                        t.push(240 | ((i >> 18) & 7), 128 | ((i >> 12) & 63), 128 | ((i >> 6) & 63), 128 | (63 & i));
+                                                    }
+                                                }
+                                                return new Uint8Array(t);
+                                            })(e)
+                                          : e);
+                              var l = (t + a) & 4294967295,
+                                  c = 0;
+                              if ((s = e).length >= 16) {
+                                  var s,
+                                      u = [(t + n + r) & 4294967295, (t + r) & 4294967295, (t + 0) & 4294967295, (t - n) & 4294967295],
+                                      p = (s = e).length - 16,
+                                      d = 0;
+                                  for (c = 0; (4294967280 & c) <= p; c += 4) {
+                                      var f = s[(y = c) + 0] + (s[y + 1] << 8),
+                                          h = s[y + 2] + (s[y + 3] << 8),
+                                          m = f * r + ((h * r) << 16),
+                                          g = 65535 & (l = ((l = (u[d] + m) & 4294967295) << 13) | (l >>> 19)),
+                                          v = l >>> 16;
+                                      (u[d] = (g * n + ((v * n) << 16)) & 4294967295), (d = (d + 1) & 3);
+                                  }
+                                  l = (((u[0] << 1) | (u[0] >>> 31)) + ((u[1] << 7) | (u[1] >>> 25)) + ((u[2] << 12) | (u[2] >>> 20)) + ((u[3] << 18) | (u[3] >>> 14))) & 4294967295;
+                              }
+                              for (l = (l + e.length) & 4294967295, p = e.length - 4; c <= p; c += 4) {
+                                  var y;
+                                  (f = s[(y = c) + 0] + (s[y + 1] << 8)),
+                                      (h = s[y + 2] + (s[y + 3] << 8)),
+                                      (l = ((65535 & (l = ((l = (l + (f * o + ((h * o) << 16))) & 4294967295) << 17) | (l >>> 15))) * i + (((l >>> 16) * i) << 16)) & 4294967295);
+                              }
+                              for (; c < s.length; ++c) l = ((65535 & (l = ((l += (d = s[c]) * a) << 11) | (l >>> 21))) * n + (((l >>> 16) * n) << 16)) & 4294967295;
+                              return (l = (((65535 & (l ^= l >>> 15)) * r) & 4294967295) + (((l >>> 16) * r) << 16)), (l = (((65535 & (l ^= l >>> 13)) * o) & 4294967295) + (((l >>> 16) * o) << 16)), (l ^= l >>> 16) < 0 ? l + 4294967296 : l;
+                          }
+                        : function () {
+                              return 0;
+                          });
+            function c(e) {
+                return "string" == typeof e ? e : JSON.stringify(e);
+            }
+            var s = "",
+                p = [];
+            try {
+                var d = navigator.userAgent,
+                    f = void 0 !== u.documentMode || void 0 !== e.ActiveXObject || (!!e.attachEvent && !e.addEventListener),
+                    m = navigator.platform,
+                    g = !1,
+                    v = "",
+                    y = "",
+                    b = "",
+                    w = "";
+                try {
+                    if (((g = !!(X = (K = u.createElement("canvas")).getContext("webgl") || K.getContext("experimental-webgl"))), null !== X)) {
+                        (v = X.getParameter(X.RENDERER).toString()), (y = X.getParameter(X.VENDOR).toString());
+                        var E = X.getExtension("WEBGL_debug_renderer_info");
+                        null !== E && ((b = X.getParameter(E.UNMASKED_RENDERER_WEBGL).toString()), (w = X.getParameter(E.UNMASKED_VENDOR_WEBGL).toString()));
+                    }
+                } catch (e) {
+                    p.push("webgl: " + e.toString());
+                }
+                var _ = !1;
+                try {
+                    _ =
+                        !0 === e.webdriver ||
+                        "object" == typeof e.process ||
+                        void 0 !== e.callPhantom ||
+                        void 0 !== e._phantom ||
+                        void 0 !== e.__phantomas ||
+                        void 0 !== e.__nightmare ||
+                        void 0 !== e._selenium ||
+                        void 0 !== e.callSelenium ||
+                        void 0 !== e._Selenium_IDE_Recorder ||
+                        void 0 !== u.__webdriver_evaluate ||
+                        void 0 !== u.__selenium_evaluate ||
+                        void 0 !== u.__webdriver_script_function ||
+                        void 0 !== u.__webdriver_script_func ||
+                        void 0 !== u.__webdriver_script_fn ||
+                        void 0 !== u.__fxdriver_evaluate ||
+                        void 0 !== u.__driver_unwrapped ||
+                        void 0 !== u.__webdriver_unwrapped ||
+                        void 0 !== u.__driver_evaluate ||
+                        void 0 !== u.__selenium_unwrapped ||
+                        void 0 !== u.__fxdriver_unwrapped ||
+                        null !== u.documentElement.getAttribute("webdriver") ||
+                        null !== u.documentElement.getAttribute("selenium") ||
+                        null !== u.documentElement.getAttribute("driver") ||
+                        !0 === navigator.webdriver;
+                } catch (e) {
+                    p.push("webdriver: " + e.toString());
+                }
+                var x = !!navigator.onLine,
+                    S = screen.width || 0,
+                    k = screen.height || 0,
+                    I = screen.availWidth || 0,
+                    T = screen.availHeight || 0,
+                    C = e.outerWidth || 0,
+                    N = e.outerHeight || 0,
+                    O = e.innerWidth || 0,
+                    P = e.innerHeight || 0,
+                    L = (u.documentElement && u.documentElement.clientWidth) || 0,
+                    A = (u.documentElement && u.documentElement.clientHeight) || 0,
+                    W = !!(u.fullscreen || u.mozFullscreen || u.webkitIsFullScreen || u.fullScreenElement),
+                    M = e.devicePixelRatio || 0,
+                    R = (screen.orientation && screen.orientation.type, navigator.hardwareConcurrency || 0),
+                    D = navigator.maxTouchPoints || navigator.msMaxTouchPoints || 0,
+                    j = "";
+                try {
+                    var U = t.contentWindow && t.contentWindow.Math ? t.contentWindow.Math : e.Math;
+                    j = Object.getOwnPropertyNames
+                        ? Object.getOwnPropertyNames(U)
+                              .map(function (e) {
+                                  return e[0].toLowerCase();
+                              })
+                              .join("")
+                        : "";
+                } catch (e) {
+                    p.push("mathKeys: " + e.toString());
+                }
+                var H = "",
+                    J = 0;
+                try {
+                    var F = new h();
+                    (H = F.toString()), (J = F.getTimezoneOffset());
+                } catch (e) {
+                    p.push("date: " + e.toString());
+                }
+                var q = navigator.language || navigator.browserLanguage || navigator.userLanguage || "",
+                    z = "";
+                try {
+                    z = navigator.languages ? (navigator.languages.join ? navigator.languages.join() : navigator.languages.toString()) : "";
+                } catch (e) {
+                    p.push("languages: " + e.toString());
+                }
+                var V = void 0 !== e.chrome,
+                    B = 0,
+                    G = 0;
+                try {
+                    var K, X;
+                    ((K = u.createElement("canvas")).width = 10),
+                        (K.height = 10),
+                        (X = K.getContext("2d", { desynchronized: !0 })).beginPath(),
+                        X.rect(0, 0, 10, 10),
+                        (X.fillStyle = "black"),
+                        X.fill(),
+                        X.beginPath(),
+                        X.rect(0, 0, 4, 4),
+                        (X.fillStyle = "white"),
+                        X.fill(),
+                        X.beginPath(),
+                        X.rect(6, 0, 4, 4),
+                        (X.fillStyle = "red"),
+                        X.fill(),
+                        X.beginPath(),
+                        X.rect(0, 6, 4, 4),
+                        (X.fillStyle = "green"),
+                        X.fill(),
+                        X.beginPath(),
+                        X.rect(6, 6, 4, 4),
+                        (X.fillStyle = "blue"),
+                        X.fill(),
+                        (B = l(K.toDataURL())),
+                        (G = l(X.getImageData(0, 0, 10, 10).data));
+                } catch (e) {
+                    p.push("canvas: " + e.toString());
+                }
+                var Y = history.length || 0,
+                    Q = !1;
+                try {
+                    Q = !(!e.external.invoke && !e.external.notify);
+                } catch (e) {}
+                if (!Q)
+                    try {
+                        Q = !!e.chrome.webview;
+                    } catch (e) {}
+                if (!Q)
+                    try {
+                        Q = !!e.webkit.messageHandlers.external;
+                    } catch (e) {}
+                try {
+                    navigator.plugins.length;
+                } catch (e) {}
+            } catch (e) {
+                s = e.toString ? e.toString() : "error";
+            }
+            if (!s)
+                try {
+                    s = JSON.stringify([
+                        c(d),
+                        c(f),
+                        c(m),
+                        c(v),
+                        c(y),
+                        c(b),
+                        c(w),
+                        c(_),
+                        c(x),
+                        c(S),
+                        c(k),
+                        c(I),
+                        c(T),
+                        c(C),
+                        c(N),
+                        c(O),
+                        c(P),
+                        c(L),
+                        c(A),
+                        c(W),
+                        c(M),
+                        c(R),
+                        c(D),
+                        c(j),
+                        c(H),
+                        c(J),
+                        c(q),
+                        c(z),
+                        c(V),
+                        c(g),
+                        c(B),
+                        c(G),
+                        c(Y),
+                        c(Q),
+                        c(p),
+                    ]);
+                } catch (e) {
+                    s = e.toString ? e.toString() : "error";
+                }
+            ($ = s), t.parentElement && t.parentElement.removeChild(t);
+        })();
+        let F = "",
+            q = !0;
+        function z(e, t = !1) {
+            if (((q = !1), F)) {
+                const e = F;
+                return (F = ""), e;
+            }
+            let n = b.url + (-1 === b.url.indexOf("?") ? "?" : "&") + "kws=" + encodeURIComponent(L.join(",")) + "&abl=" + (y ? 1 : 0) + "&fsb=" + (P ? 1 : 0) + "&pageUri=" + encodeURIComponent(m) + "&referer=" + encodeURIComponent(g);
+            return $ && (n += "&bdd=" + encodeURIComponent($)), e && -1 === n.indexOf("&si=1") && (n += "&si=1"), t && (n += "&prsl=1"), 0 === n.indexOf("//") && (n = "https:" + n), n;
+        }
+        function V() {
+            return "top=" + M + ",left=" + R + ",width=" + A + ",height=" + W + ",status=0,location=1,toolbar=1,menubar=1,resizable=1,scrollbars=1";
+        }
+        function B(t, n) {
+            let r = "" + Math.random();
+            if (("msie" === b.browserName && Number(b.browserVersion) <= 9 && (r = ""), "firefox" === b.browserName && "ios" === b.osName)) return (n ? e.open(t, r, n) : e.open(t, r)) || null;
+            const o = n ? e.open("", r, n) : e.open("", r);
+            if (!o) return null;
+            try {
+                o.location.replace(t);
+            } catch (e) {}
+            return o;
+        }
+        function G(e) {
+            return B(e, V());
+        }
+        function K(t) {
+            switch (b.browserName) {
+                case "firefox":
+                    return (function (t) {
+                        const n = G(t);
+                        return n
+                            ? (o(() => {
+                                  const t = e.open("", "_self");
+                                  t && !t.closed && t.focus();
+                              }, 0),
+                              n)
+                            : null;
+                    })(t);
+                case "msie":
+                    return 11 === Number(b.browserVersion)
+                        ? (function (t) {
+                              const n = G(t);
+                              if (!n) return null;
+                              let r = 0,
+                                  o = i(() => {
+                                      r++, r > 10 && (l(o), (o = null));
+                                      try {
+                                          n.blur(), n.opener.focus(), e.self.focus(), e.focus(), u.focus();
+                                      } catch (e) {}
+                                  }, 100);
+                              return n;
+                          })(t)
+                        : (function (t) {
+                              const n = G(t);
+                              if (!n) return null;
+                              try {
+                                  u.focus();
+                              } catch (e) {}
+                              return e.focus(), n.blur(), n;
+                          })(t);
+                case "safari":
+                    return (function (t) {
+                        function n(e, t, n) {
+                            const r = u.createElement("iframe");
+                            (r.style.cssText = "display:none;"), u.body.appendChild(r);
+                            const o = r.contentWindow.document.createElement("script");
+                            let i;
+                            (o.type = "text/javascript"),
+                                (o.innerHTML =
+                                    "window.parent = window.top = window.frameElement = null;window.mkp = function(url, name, opts) {var popWin = window.open(url, name, opts);try {popWin.opener = null} catch (e) {}return popWin;};"),
+                                r.contentWindow.document.body.appendChild(o);
+                            try {
+                                i = r.contentWindow.mkp(e, t, n) || null;
+                            } catch (e) {
+                                i = null;
+                            }
+                            return u.body.removeChild(r), i;
+                        }
+                        e.name = "" + Math.random();
+                        const r = n(t, "" + Math.random(), V());
+                        return n("", e.name, ""), (e.name = null), r || null;
+                    })(t);
+            }
+            return null;
+        }
+        function X(e, t) {
+            const n = t.target.closest("a");
+            return n && "_blank" === n.target && t.preventDefault(), B(e);
+        }
+        function Y(e, t) {
+            let n = b.type;
+            switch (
+                ("popunder" !== n || j || (n = "tabunder"),
+                "tabunder" !== n || H || (n = "popup"),
+                "popup" !== n || D || (n = "tabup"),
+                "tabup" === n && !U && H && (n = "tabunder"),
+                e.includes("focus=") || (e += (e.includes("?") ? "&" : "?") + "focus=" + ("popup" === n || "tabup" === n ? "1" : "0")),
+                n)
+            ) {
+                case "popunder":
+                    return K(e);
+                case "popup":
+                    return G(e);
+                case "tabup":
+                    return X(e, t);
+                case "tabunder":
+                    return (function (e, t) {
+                        const n = t.target.closest("a");
+                        let r = p.href;
+                        if (n) {
+                            if ((("_blank" !== n.target || b.openTargetBlank) && (r = n.href), "click" !== J)) {
+                                const e = (t) => {
+                                    t.preventDefault(), f("click", e);
+                                };
+                                d("click", e);
+                            }
+                            t.preventDefault();
+                        }
+                        const o = X(r, t);
+                        return o ? (p.replace(e), o) : null;
+                    })(e, t);
+            }
+            return null;
+        }
+        function Q() {
+            if (e.clkAISVShowing) return !1;
+            const t = (h.now() / 1e3) | 0,
+                n = parseInt(c.getItem(E) || "0", 10);
+            if (0 !== b.delay && 0 !== n && t - n < b.delay) return !1;
+            if (0 !== b.limitPerPage) {
+                if (parseInt(s.getItem(_) || "0", 10) >= b.limitPerPage) return !1;
+            }
+            if (0 !== b.limitPerSession) {
+                if (parseInt(s.getItem(w) || "0", 10) >= b.limitPerSession) return !1;
+            }
+            if (0 === b.limit || 0 === b.frequency) return !0;
+            let r;
+            try {
+                const e = c.getItem(w);
+                if (null === e) return !0;
+                r = JSON.parse(e);
+            } catch (e) {
+                return !0;
+            }
+            let o = 0;
+            for (let e = 0; e < r.length; e++) t - r[e] >= b.frequency || o++;
+            return o < b.limit;
+        }
+        function Z() {
+            if (e.clkAISVShowing || !g || !k || !I) return !1;
+            const t = (h.now() / 1e3) | 0,
+                n = parseInt(c.getItem(E) || "0", 10);
+            if (0 !== b.delay && 0 !== n && t - n < b.delay) return !1;
+            if (0 === k || 0 === I) return !0;
+            let r;
+            try {
+                const e = c.getItem(S);
+                if (null === e) return !0;
+                r = JSON.parse(e);
+            } catch (e) {
+                return !0;
+            }
+            let o = 0;
+            for (let e = 0; e < r.length; e++) t - r[e] >= I || o++;
+            return o < k;
+        }
+        o(() => {
+            if (!q || !Q()) return;
+            const e = new XMLHttpRequest();
+            (e.onreadystatechange = () => {
+                4 === e.readyState && 200 === e.status && e.responseText && (F = e.responseText);
+            }),
+                e.open("GET", z(!1, !0), !0),
+                e.send();
+        }, 3e3);
+        let ee = [];
+        function te(t) {
+            const n = u.createElement("div"),
+                r = t.getBoundingClientRect();
+            (n.className = T),
+                (n.style.cssText = "position: absolute; cursor: pointer; z-index: 2147483646; height: " + r.height + "px; width: " + r.width + "px; left: " + (r.left + e.scrollX) + "px; top: " + (r.top + e.scrollY) + "px;"),
+                (n[N] = !0),
+                u.body.appendChild(n),
+                ee.push(n);
+        }
+        function ne() {
+            const e = Q() || Z();
+            ee.forEach((t) => {
+                e ? t.parentElement !== u.body && u.body.appendChild(t) : null !== t.parentElement && t.remove();
+            });
+        }
+        function re() {
+            const e = u.querySelectorAll(C);
+            for (let t = 0; t < e.length; t++) {
+                const n = e[t];
+                n[N] || ((n[N] = !0), (n.closest("." + T) || 0 === b.bindTo.length || n.closest(b.bindTo)) && ((0 !== b.ignoreTo.length && n.closest(b.ignoreTo)) || te(n)));
+            }
+            ne();
+        }
+        let oe = !1,
+            ie = 0;
+        function ae(t) {
+            if (oe) return;
+            if (!(t = t || e.event)) return;
+            if (!(("click" !== t.type && "mouseup" !== t.type && "mousedown" !== t.type) || (3 !== t.which && 2 !== t.button))) return;
+            if (0 !== b.bindTo.length && !t.target.closest(b.bindTo) && !t.target.closest("." + T)) return;
+            if (0 !== b.ignoreTo.length && t.target.closest(b.ignoreTo)) return;
+            oe = !0;
+            let n = o(() => {
+                    oe = !1;
+                }, 3e3),
+                r = Q(),
+                i = !1;
+            if ((r || ((r = Z()), (i = r)), !r))
+                return (
+                    a(n),
+                    void o(() => {
+                        oe = !1;
+                    }, 100)
+                );
+            if ((ie++, b.skipClicks >= ie)) return;
+            const l = Y(z(i), t);
+            l &&
+                !l.closed &&
+                (!(function (e) {
+                    const t = (h.now() / 1e3) | 0;
+                    if ((c.setItem(E, "" + t), e)) {
+                        let e = [];
+                        try {
+                            const t = c.getItem(S);
+                            null !== t && (e = JSON.parse(t));
+                        } catch (e) {}
+                        return (e = e.filter((e) => t - e < I)), e.push(t), void c.setItem(S, JSON.stringify(e));
+                    }
+                    if (0 !== b.limitPerPage) {
+                        const e = parseInt(s.getItem(_) || "0", 10);
+                        s.setItem(_, "" + (e + 1)), s.setItem(x, "" + p);
+                    }
+                    if (0 !== b.limitPerSession) {
+                        const e = parseInt(s.getItem(w) || "0", 10);
+                        s.setItem(w, "" + (e + 1));
+                    }
+                    if (0 === b.limit || 0 === b.frequency) return;
+                    let n = [];
+                    try {
+                        const e = c.getItem(w);
+                        null !== e && (n = JSON.parse(e));
+                    } catch (e) {}
+                    (n = n.filter((e) => t - e < b.frequency)), n.push(t), c.setItem(w, JSON.stringify(n));
+                })(i),
+                ne(),
+                a(n),
+                o(() => {
+                    oe = !1;
+                }, 100));
+        }
+        if (0 !== b.limitPerPage) {
+            (s.getItem(x) || "") !== "" + p && (s.removeItem(_), s.removeItem(x));
+        }
+        let le = parseInt(s.getItem("clk$popStart") || "0", 10);
+        le || ((le = (h.now() / 1e3) | 0), s.setItem("clk$popStart", "" + le));
+        let ce = b.initDelay - (((h.now() / 1e3) | 0) - le);
+        ce < 0 && (ce = 0),
+            o(() => {
+                !(function () {
+                    if ("desktop" === b.deviceType) d(J, ae, !0);
+                    else {
+                        let e = !1;
+                        d(
+                            "touchstart",
+                            () => {
+                                e = !1;
+                            },
+                            !0
+                        ),
+                            d(
+                                "touchmove",
+                                () => {
+                                    e = !0;
+                                },
+                                !0
+                            ),
+                            d(
+                                "touchend",
+                                (t) => {
+                                    e || ae(t);
+                                },
+                                !0
+                            );
+                    }
+                    re(), i(re, 1e3);
+                })();
+            }, 1e3 * ce);
+    })(e);
+})(window);
+
+				
+			</script>
